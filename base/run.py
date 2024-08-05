@@ -369,10 +369,13 @@ def summary_logs(config, case_log_dir):
         
         # system monitor results like CPU/MEM/POWER
         for index in ["cpu", "mem", "pwr"]:
-            monitor_path = os.path.join(monitor_log_dir, index + "_monitor.log")
-            with open(monitor_path, 'r') as file:
-                sys_log = [float(line.split("\t")[1][:-1]) for line in file if "\t" in line]
-            result[host][index] = sys_log
+            try:
+                monitor_path = os.path.join(monitor_log_dir, index + "_monitor.log")
+                with open(monitor_path, 'r') as file:
+                    sys_log = [float(line.split("\t")[1][:-1]) for line in file if "\t" in line]
+                result[host][index] = sys_log
+            except:
+                continue
         
         # FlagPerf Result
         flagperf_result_path = os.path.join(monitor_log_dir, config.BENCHMARKS_OR_TOOLKITS.lower() + ".log.txt")
@@ -398,11 +401,11 @@ def analysis_log(key_logs):
 
         RUN_LOGGER.info("2) POWER:")
         RUN_LOGGER.info("  2.1) SYSTEM POWER:")
-        pwr_series = key_logs[host]["pwr"]
-        RUN_LOGGER.info(
-            "    AVERAGE: {} Watts, MAX: {} Watts, STD DEVIATION: {} Watts".
-            format(round(np.mean(pwr_series), 2), round(np.max(pwr_series), 2),
-                   round(np.std(pwr_series), 2)))
+        # pwr_series = key_logs[host]["pwr"]
+        # RUN_LOGGER.info(
+        #     "    AVERAGE: {} Watts, MAX: {} Watts, STD DEVIATION: {} Watts".
+        #     format(round(np.mean(pwr_series), 2), round(np.max(pwr_series), 2),
+        #            round(np.std(pwr_series), 2)))
 
         RUN_LOGGER.info("  2.2) AI-chip POWER:")
         for node in key_logs[host]["vendor"]["power"].keys():
